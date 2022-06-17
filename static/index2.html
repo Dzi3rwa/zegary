@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REACT</title>
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+
+<body>
+    <div id="react-app"></div>
+    <style>
+        .main {
+            display: flex;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .object {
+            padding: 30px;
+            border: 5px solid blue;
+            text-align: center;
+            border-radius: 50%;
+            width: 300px;
+            height: 300px;
+            margin: 50px;
+        }
+
+        .object__h2 {
+            color: red;
+            margin: 20px;
+            font-size: 30px;
+            height: 90px;
+        }
+
+        .object__button {
+            color: blue;
+            text-decoration: none;
+            padding: 10px 20px;
+            border: 2px solid blue;
+        }
+
+        .clock {
+            font-size: 70px;
+            color: blue;
+            margin-bottom: 30px;
+        }
+    </style>
+
+    <script type="text/babel">
+
+        const date = new Date()
+        class Clock extends React.Component {
+            constructor(props) {
+                super(props)
+                let h = date.getHours() + this.props.offset - 1
+                let m = date.getMinutes()
+                let s = date.getSeconds()
+                if (Math.floor(h) != h) {
+                    if (this.props.offset == 5.75) {
+                        h += 0.75
+                        m += 45
+                        if (m > 59) {
+                            m -= 60
+                        }
+                    } else {
+                        h += 0.5
+                        m += 30
+                        if (m > 59) {
+                            m -= 60
+                        }
+                    }
+                }
+                if (h < 0) h = h + 24
+                if (h > 23) h = h - 24
+                if (h < 10) h = "0" + h
+                if (m < 10) m = "0" + m
+                if (s < 10) s = "0" + s
+                this.state = {
+                    time: `${h}:${m}:${s}`
+
+                }
+            }
+            useEffect() {
+                let bool = true
+                if (bool) {
+                    const timer = setInterval(() => {
+                        const date = new Date()
+                        let h = date.getHours() + this.props.offset - 1
+                        let m = date.getMinutes()
+                        let s = date.getSeconds()
+                        if (Math.floor(h) != h) {
+                            if (this.props.offset == 5.75) {
+                                h += 0.25
+                                m += 45
+                                if (m > 59) {
+                                    m -= 60
+                                }
+                            } else {
+                                h += 0.5
+                                m += 30
+                                if (m > 59) {
+                                    m -= 60
+                                }
+                            }
+                        }
+                        if (h < 0) h = h + 24
+                        if (h > 23) h = h - 24
+                        if (h < 10) h = "0" + h
+                        if (m < 10) m = "0" + m
+                        if (s < 10) s = "0" + s
+                        this.setState({
+                            time: `${h}:${m}:${s}`
+                        })
+                    }, 1000)
+                    return () => clearInterval(timer)
+                }
+            }
+            render() {
+                return (
+                    <div className="clock" load={this.useEffect()}>{this.state.time}</div>
+                )
+            }
+        }
+        class Zone extends React.Component {
+
+            render(props) {
+                return (
+                    <div className="object">
+                        <h2 className="object__h2">{this.props.element.value}</h2>
+                        <Clock offset={this.props.element.offset} />
+                    </div>
+                )
+            }
+        }
+        class ZonesList extends React.Component {
+            constructor() {
+                super();
+                this.state = {
+                    tablica: []
+                }
+            }
+            render() {
+                const headers = { "Content-Type": "application/json" }
+                fetch("/two", { method: "get", headers })
+                    .then(response => response.json())
+                    .then(
+                        data => {
+                            const tab = data.map(e => {
+                                return <Zone element={e} key={e.value} />
+                            })
+                            this.setState({
+                                tablica: tab
+                            })
+                        }
+                    )
+                return (
+                    <div className="main">
+                        <a href="index1.html">powrót</a>
+                        <div>{this.state.tablica}</div>
+                    </div>
+                )
+            }
+        }
+
+        ReactDOM.render(
+            <div className="main">
+
+                <ZonesList />
+            </div>,
+
+            document.getElementById('react-app')
+        )
+    </script>
+</body>
+
+</html>
